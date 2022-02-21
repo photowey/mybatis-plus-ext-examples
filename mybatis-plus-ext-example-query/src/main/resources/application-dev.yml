@@ -1,0 +1,28 @@
+local:
+  config:
+    mysql:
+      host: "192.168.0.11"
+      port: 3307
+      username: "root"
+      password: "root"
+      database: "mybatis-plus-ext"
+
+spring:
+  datasource:
+    driver-class-name: "org.h2.Driver"
+    url: "jdbc:h2:mem:test_db"
+    username: root
+    password:
+    schema: "classpath:db/schema.sql"
+    #data: "classpath:db/data.sql"
+  h2:
+    console:
+      enabled: true
+      path: /console
+      settings:
+        trace: false
+        web-allow-others: false
+
+logging:
+  level:
+    "com.photowey.mybatisplus.ext.query.repository": debug

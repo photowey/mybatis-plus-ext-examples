@@ -1,0 +1,4 @@
+# 加载 MetaPropertiesFiller 实现类
+com.photowey.mybatisplus.ext.meta.filler.MetaPropertiesFiller=\
+code com.photowey.mybatisplus.ext.meta.filler.DefaultMetaPropertiesFiller
+

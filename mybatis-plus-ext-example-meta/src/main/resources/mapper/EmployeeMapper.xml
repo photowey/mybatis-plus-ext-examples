@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.photowey.mybatisplus.ext.meta.repository.EmployeeRepository">
+
+    <select id="selectDeletedOne" parameterType="Long" resultType="Employee">
+        SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create
+        AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED
+        FROM sys_employee WHERE DELETED=1 AND id=#{id}
+    </select>
+
+</mapper>
