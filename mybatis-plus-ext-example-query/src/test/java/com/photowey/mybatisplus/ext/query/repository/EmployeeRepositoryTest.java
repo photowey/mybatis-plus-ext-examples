@@ -144,6 +144,21 @@ class EmployeeRepositoryTest {
         Assertions.assertEquals(0, employees.size());
     }
 
+    @Test
+    void testSelectAnnotation() {
+        EmployeeQuery employeeQuery = new EmployeeQuery();
+        employeeQuery.setId(1L);
+        employeeQuery.setEmployeeNo("2021109527");
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = to.minusDays(2);
+        employeeQuery.setCreateTimeFrom(from.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        employeeQuery.setCreateTimeTo(to.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+
+        String sqlSelect = employeeQuery.autoWrapperExt().getSqlSelect();
+
+        Assertions.assertEquals("id,employee_no",sqlSelect);
+    }
+
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class EmployeeQuery extends AbstractQuery<Employee> {
@@ -171,6 +186,9 @@ class EmployeeRepositoryTest {
 
         @Timestamp(alias = "gmt_create", compare = CompareEnum.LE, clazz = LocalDateTime.class)
         private Long createTimeTo;
+
+        @Select(value = {"id", "employee_no"})
+        private String fields;
     }
 
     private Employee populateEmployee() {
