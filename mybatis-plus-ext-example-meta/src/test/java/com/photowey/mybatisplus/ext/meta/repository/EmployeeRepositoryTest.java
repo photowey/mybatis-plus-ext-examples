@@ -1,5 +1,6 @@
 package com.photowey.mybatisplus.ext.meta.repository;
 
+import com.photowey.mybatisplus.ext.core.domain.operator.Operator;
 import com.photowey.mybatisplus.ext.meta.domain.entity.Employee;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,15 +33,18 @@ class EmployeeRepositoryTest {
 
         Employee selectOne = this.employeeRepository.selectOne(Employee::getEmployeeNo, "2021109527" + "Meta");
         Assertions.assertNotNull(selectOne);
-        doAssert(selectOne);
+
+        this.doAssert(selectOne);
     }
 
     @Test
     void testLogicDelete() {
-        Long id = 1494377100172378113L;
-        this.employeeRepository.deleteById(id);
+        Employee employee = this.populateEmployee();
+        this.employeeRepository.insert(employee);
+
+        this.employeeRepository.deleteById(employee.getId());
         // 不能执行 selectById() - 因为 逻辑删除-会改写语句: DELETED=0 - 导致查询不到数据
-        Employee deleted = this.employeeRepository.selectDeletedOne(id);
+        Employee deleted = this.employeeRepository.selectDeletedOne(employee.getId());
         Assertions.assertNotNull(deleted);
         Assertions.assertEquals(1, deleted.getDeleted());
         doAssert(deleted);
@@ -54,8 +58,14 @@ class EmployeeRepositoryTest {
         Assertions.assertEquals(1024, employeeModel.getOrderNo());
         Assertions.assertEquals(1, employeeModel.getStatus());
         Assertions.assertEquals("我是备注" + "Meta", employeeModel.getRemark());
-        Assertions.assertEquals("UserInfo" + "Meta", employeeModel.getCreateBy());
-        Assertions.assertEquals("UserInfo" + "Meta", employeeModel.getUpdateBy());
+
+        // @see com.photowey.mybatisplus.ext.meta.handler.OperatorHandlerImpl.tryAcquireOperator
+        Operator operator = Operator.builder()
+                .operatorId(20211095278848L)
+                .build();
+
+        Assertions.assertEquals(operator.getOperatorId(), employeeModel.getCreateBy());
+        Assertions.assertEquals(operator.getOperatorId(), employeeModel.getUpdateBy());
     }
 
     private Employee populateEmployee() {

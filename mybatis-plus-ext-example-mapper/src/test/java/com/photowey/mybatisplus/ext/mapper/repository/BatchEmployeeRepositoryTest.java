@@ -1,6 +1,7 @@
 package com.photowey.mybatisplus.ext.mapper.repository;
 
-import com.photowey.mybatisplus.ext.mapper.domain.entity.Employee;
+import com.photowey.mybatisplus.ext.condition.domain.entity.Employee;
+import com.photowey.mybatisplus.ext.core.domain.operator.Operator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,16 @@ class BatchEmployeeRepositoryTest {
         employee.setOrderNo(1024);
         employee.setStatus(1);
         employee.setRemark("我是备注" + index);
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setCreateBy("20211095278848");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateBy("20211095278848");
+
+        Operator operator = Operator.builder()
+                .operatorId(20211095278848L)
+                .build();
+
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreateBy(operator.getOperatorId());
+        employee.setCreateTime(now);
+        employee.setUpdateBy(operator.getOperatorId());
+        employee.setUpdateTime(now);
         employee.setDeleted(0);
 
         return employee;

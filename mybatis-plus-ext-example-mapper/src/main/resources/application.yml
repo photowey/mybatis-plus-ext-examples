@@ -20,15 +20,9 @@ mybatis-plus:
     call-setters-on-nulls: true
   global-config:
     db-config:
-      id-type: id_worker
+      id-type: ASSIGN_ID
       table-prefix: sys_
-      capital-mode: true
-      logic-delete-value: 1
-      logic-not-delete-value: 0
-      logic-delete-field: deleted
-      db-column-underline: true
-    field-strategy: 2
-    refresh-mapper: true
+      capital-mode: false
   check-config-location: true
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.photowey.mybatisplus.ext.mapper.domain.entity
@@ -36,3 +30,5 @@ mybatis-plus:
 logging:
   pattern:
     console: '%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %red([${spring.application.name}]) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger) - %cyan(%msg%n)'
+  level:
+    com.photowey.mybatisplus.ext.mapper.repository: debug

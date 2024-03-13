@@ -40,10 +40,12 @@
             <artifactId>druid-spring-boot-starter</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--        </dependency>-->
+        <!--
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        -->
 
         <dependency>
             <groupId>com.h2database</groupId>
@@ -53,6 +55,7 @@
         <dependency>
             <groupId>com.photowey</groupId>
             <artifactId>mybatis-plus-ext-starter</artifactId>
+            <type>pom</type>
         </dependency>
     </dependencies>
 

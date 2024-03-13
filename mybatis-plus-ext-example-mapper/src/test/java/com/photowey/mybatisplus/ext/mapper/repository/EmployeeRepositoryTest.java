@@ -3,9 +3,10 @@ package com.photowey.mybatisplus.ext.mapper.repository;
 import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.photowey.mybatisplus.ext.annotation.*;
+import com.photowey.mybatisplus.ext.condition.domain.entity.Employee;
+import com.photowey.mybatisplus.ext.core.domain.operator.Operator;
 import com.photowey.mybatisplus.ext.enmus.CompareEnum;
 import com.photowey.mybatisplus.ext.processor.model.query.AbstractQuery;
-import com.photowey.mybatisplus.ext.mapper.domain.entity.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Assertions;
@@ -158,13 +159,13 @@ class EmployeeRepositoryTest {
 
     @Test
     void testSelectCount() {
-        int count = this.employeeRepository.selectCount("id", 0L);
+        long count = this.employeeRepository.selectCount("id", 0L);
         Assertions.assertEquals(0, count);
     }
 
     @Test
     void testSelectCountCallback() {
-        int count = this.employeeRepository.selectCount("id", 0L, (wrapper) -> {
+        long count = this.employeeRepository.selectCount("id", 0L, (wrapper) -> {
             wrapper.eq("employee_no", "2021109527");
         });
         Assertions.assertEquals(0, count);
@@ -172,13 +173,13 @@ class EmployeeRepositoryTest {
 
     @Test
     void testSelectCountFunction() {
-        int count = this.employeeRepository.selectCount(Employee::getId, 0L);
+        long count = this.employeeRepository.selectCount(Employee::getId, 0L);
         Assertions.assertEquals(0, count);
     }
 
     @Test
     void testSelectCountFunctionCallback() {
-        int count = this.employeeRepository.selectCount(Employee::getId, 0L, (wrapper) -> {
+        long count = this.employeeRepository.selectCount(Employee::getId, 0L, (wrapper) -> {
             wrapper.eq(Employee::getEmployeeNo, "2021109527");
         });
         Assertions.assertEquals(0, count);
@@ -200,16 +201,17 @@ class EmployeeRepositoryTest {
         EmployeeQuery employeeQuery = new EmployeeQuery();
         employeeQuery.setId(id);
         employeeQuery.setEmployeeNo("2021109527");
-        LocalDateTime to = LocalDateTime.now();
-        LocalDateTime from = to.minusDays(2);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = now.minusDays(2);
         employeeQuery.setCreateTimeFrom(from.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-        employeeQuery.setCreateTimeTo(to.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+        employeeQuery.setCreateTimeTo(now.plusDays(1).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 
         Employee employee = this.populateEmployee();
         employee.setId(id);
         this.employeeRepository.insert(employee);
 
-        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (id = ? AND employee_no = ? AND gmt_create >= ? AND gmt_create <= ?) LIMIT ?
+        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,update_time AS createTime,update_time AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (id = ? AND employee_no = ? AND update_time >= ? AND update_time <= ?) LIMIT ?
         // Parameters: 1494556614122921985(Long), 2021109527(String), 2022-02-16 15:02:24.521(Timestamp), 2022-02-18 15:02:24.521(Timestamp), 10(Long)
         // 执行正常的分页查询
         IPage<Employee> page = this.employeeRepository.selectPage(employeeQuery);
@@ -240,10 +242,16 @@ class EmployeeRepositoryTest {
         employee.setOrderNo(1024);
         employee.setStatus(1);
         employee.setRemark("我是备注");
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setCreateBy("20211095278848");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateBy("20211095278848");
+
+        Operator operator = Operator.builder()
+                .operatorId(20211095278848L)
+                .build();
+
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreateBy(operator.getOperatorId());
+        employee.setCreateTime(now);
+        employee.setUpdateBy(operator.getOperatorId());
+        employee.setUpdateTime(now);
         employee.setDeleted(0);
 
         return employee;
@@ -268,10 +276,10 @@ class EmployeeRepositoryTest {
         @Le
         private Integer status;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.GE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "create_time", compare = CompareEnum.GE, clazz = LocalDateTime.class)
         private Long createTimeFrom;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.LE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "create_time", compare = CompareEnum.LE, clazz = LocalDateTime.class)
         private Long createTimeTo;
     }
 }

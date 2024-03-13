@@ -8,3 +8,10 @@
 - `mybatis-plus-ext-example-mysql`  // `mysql` 数据访问依赖  
 - `mybatis-plus-ext-example-query`  // 扩展 `QueryWrapper` 和 `LambdaQueryWrapper`  
 - `mybatis-plus-ext-example-web`  // `web` 项目依赖  
+
+## 测试
+
+```shell
+
+```
+

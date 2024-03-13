@@ -3,11 +3,12 @@ package com.photowey.mybatisplus.ext.query.repository;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.photowey.mybatisplus.ext.annotation.*;
+import com.photowey.mybatisplus.ext.core.domain.operator.Operator;
 import com.photowey.mybatisplus.ext.enmus.CompareEnum;
 import com.photowey.mybatisplus.ext.processor.model.query.AbstractQuery;
 import com.photowey.mybatisplus.ext.query.QueryWrapperExt;
-import com.photowey.mybatisplus.ext.validator.ValueValidator;
 import com.photowey.mybatisplus.ext.query.domain.entity.Employee;
+import com.photowey.mybatisplus.ext.validator.ValueValidator;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Assertions;
@@ -77,11 +78,11 @@ class EmployeeRepositoryTest {
         }
 
         if (ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeFrom())) {
-            queryWrapper.ge("gmt_create", employeeQuery.getCreateTimeFrom());
+            queryWrapper.ge("update_time", employeeQuery.getCreateTimeFrom());
         }
 
         if (ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeTo())) {
-            queryWrapper.le("gmt_create", employeeQuery.getCreateTimeTo());
+            queryWrapper.le("update_time", employeeQuery.getCreateTimeTo());
         }
 
         List<Employee> employees = this.employeeRepository.selectList(queryWrapper);
@@ -108,8 +109,8 @@ class EmployeeRepositoryTest {
 
         queryWrapper.ge(ValueValidator.isNotNullOrEmpty(employeeQuery.getOrderNo()), "order_no", employeeQuery.getOrderNo());
         queryWrapper.le(ValueValidator.isNotNullOrEmpty(employeeQuery.getStatus()), "status", employeeQuery.getStatus());
-        queryWrapper.ge(ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeFrom()), "gmt_create", employeeQuery.getCreateTimeFrom());
-        queryWrapper.le(ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeTo()), "gmt_create", employeeQuery.getCreateTimeTo());
+        queryWrapper.ge(ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeFrom()), "update_time", employeeQuery.getCreateTimeFrom());
+        queryWrapper.le(ValueValidator.isNotNullOrEmpty(employeeQuery.getCreateTimeTo()), "update_time", employeeQuery.getCreateTimeTo());
 
         List<Employee> employees = this.employeeRepository.selectList(queryWrapper);
         Assertions.assertEquals(0, employees.size());
@@ -117,7 +118,6 @@ class EmployeeRepositoryTest {
 
     @Test
     void testQueryExt() {
-
         EmployeeQuery employeeQuery = new EmployeeQuery();
         employeeQuery.setId(1L);
         employeeQuery.setEmployeeNo("2021109527");
@@ -135,10 +135,10 @@ class EmployeeRepositoryTest {
         queryWrapper.likeIfPresent("org_name", employeeQuery.getRemark(), SqlLike.RIGHT);
         queryWrapper.geIfPresent("order_no", employeeQuery.getOrderNo());
         queryWrapper.leIfPresent("status", employeeQuery.getStatus());
-        queryWrapper.geIfPresent("gmt_create", employeeQuery.getCreateTimeFrom());
-        queryWrapper.leIfPresent("gmt_create", employeeQuery.getCreateTimeTo());
+        queryWrapper.geIfPresent("update_time", employeeQuery.getCreateTimeFrom());
+        queryWrapper.leIfPresent("update_time", employeeQuery.getCreateTimeTo());
 
-        queryWrapper.betweenIfPresent("gmt_create", employeeQuery.getCreateTimeTo(), employeeQuery.getCreateTimeTo());
+        queryWrapper.betweenIfPresent("update_time", employeeQuery.getCreateTimeTo(), employeeQuery.getCreateTimeTo());
 
         List<Employee> employees = this.employeeRepository.selectList(queryWrapper);
         Assertions.assertEquals(0, employees.size());
@@ -156,7 +156,7 @@ class EmployeeRepositoryTest {
 
         String sqlSelect = employeeQuery.autoWrapperExt().getSqlSelect();
 
-        Assertions.assertEquals("id,employee_no",sqlSelect);
+        Assertions.assertEquals("id,employee_no", sqlSelect);
     }
 
     @Data
@@ -181,14 +181,14 @@ class EmployeeRepositoryTest {
         @Like(alias = "remark", like = SqlLike.RIGHT)
         private String remark;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.GE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "update_time", compare = CompareEnum.GE, clazz = LocalDateTime.class)
         private Long createTimeFrom;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.LE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "update_time", compare = CompareEnum.LE, clazz = LocalDateTime.class)
         private Long createTimeTo;
 
         @Select(value = {"id", "employee_no"})
-        private String fields;
+        private String properties;
     }
 
     private Employee populateEmployee() {
@@ -199,10 +199,16 @@ class EmployeeRepositoryTest {
         employee.setOrderNo(1024);
         employee.setStatus(1);
         employee.setRemark("我是备注");
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setCreateBy("20211095278848");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateBy("20211095278848");
+
+        Operator operator = Operator.builder()
+                .operatorId(20211095278848L)
+                .build();
+
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreateBy(operator.getOperatorId());
+        employee.setCreateTime(now);
+        employee.setUpdateBy(operator.getOperatorId());
+        employee.setUpdateTime(now);
         employee.setDeleted(0);
 
         return employee;

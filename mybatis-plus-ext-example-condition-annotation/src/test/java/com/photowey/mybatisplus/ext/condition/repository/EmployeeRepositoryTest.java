@@ -3,10 +3,11 @@ package com.photowey.mybatisplus.ext.condition.repository;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.photowey.mybatisplus.ext.annotation.*;
+import com.photowey.mybatisplus.ext.condition.domain.entity.Employee;
 import com.photowey.mybatisplus.ext.enmus.CompareEnum;
 import com.photowey.mybatisplus.ext.processor.model.query.AbstractQuery;
+import com.photowey.mybatisplus.ext.query.LambdaQueryWrapperExt;
 import com.photowey.mybatisplus.ext.query.QueryWrapperExt;
-import com.photowey.mybatisplus.ext.condition.domain.entity.Employee;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Assertions;
@@ -59,7 +60,7 @@ class EmployeeRepositoryTest {
 
         Employee employee = this.employeeRepository.selectOne(employeeQueryWrapperExt);
         // 关注执行的SQL
-        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (employee_no = ? AND org_name LIKE ?)
+        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,create_time AS createTime,update_time AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (employee_no = ? AND org_name LIKE ?)
         // Parameters: 2021109527(String), 宇宙漫游者%(String)
         Assertions.assertNull(employee);
     }
@@ -75,7 +76,7 @@ class EmployeeRepositoryTest {
 
         Employee employee = this.employeeRepository.selectOne(employeeQueryWrapperExt);
         // 关注执行的SQL
-        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (order_no >= ?)
+        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,create_time AS createTime,update_time AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (order_no >= ?)
         // Parameters: 1024(Integer)
         Assertions.assertNull(employee);
     }
@@ -91,7 +92,7 @@ class EmployeeRepositoryTest {
 
         Employee employee = this.employeeRepository.selectOne(employeeQueryWrapperExt);
         // 关注执行的SQL
-        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (status <= ?)
+        // Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,create_time AS createTime,update_time AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (status <= ?)
         // Parameters: 2(Integer)
         Assertions.assertNull(employee);
     }
@@ -106,11 +107,11 @@ class EmployeeRepositoryTest {
 
         QueryWrapperExt<Employee> employeeQueryWrapperExt = employeeQuery.autoWrapperExt();
         String targetSql = employeeQueryWrapperExt.getTargetSql();
-        Assertions.assertEquals("(gmt_create >= ? AND gmt_create <= ?)", targetSql);
+        Assertions.assertEquals("(create_time >= ? AND create_time <= ?)", targetSql);
 
         Employee employee = this.employeeRepository.selectOne(employeeQueryWrapperExt);
         // 关注执行的SQL
-        // Preparing: Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,gmt_create AS createTime,gmt_modified AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (gmt_create >= ? AND gmt_create <= ?)
+        // Preparing: Preparing: SELECT ID,EMPLOYEE_NO,ORG_ID,ORG_NAME,ORDER_NO,STATUS,REMARK,create_time AS createTime,update_time AS updateTime,CREATE_BY,UPDATE_BY,DELETED FROM sys_employee WHERE DELETED=0 AND (create_time >= ? AND create_time <= ?)
         // Parameters: Parameters: 2022-02-16 12:07:02.243(Timestamp), 2022-02-18 12:07:02.243(Timestamp)
         Assertions.assertNull(employee);
     }
@@ -144,6 +145,22 @@ class EmployeeRepositoryTest {
         Assertions.assertNull(employee);
     }
 
+    @Test
+    void testOrderByAndLimit() {
+        LambdaQueryWrapperExt<Employee> wrapper = new LambdaQueryWrapperExt<Employee>()
+                .selector(Employee::getId, Employee::getEmployeeNo)
+                .eq(Employee::getOrgId, 9527L)
+                .orderByDesc(Employee::getId)
+                .limit(1);
+
+        Employee employee = this.employeeRepository.selectOne(wrapper);
+        String targetSql = wrapper.getTargetSql();
+
+        // SELECT id,employee_no FROM sys_employee WHERE deleted=0 AND (org_id = ?) ORDER BY id DESC LIMIT 1
+        Assertions.assertNull(employee);
+        Assertions.assertEquals("(org_id = ?) ORDER BY id DESC LIMIT 1", targetSql);
+    }
+
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class EmployeeQuery extends AbstractQuery<Employee> {
@@ -163,10 +180,10 @@ class EmployeeRepositoryTest {
         @Le
         private Integer status;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.GE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "create_time", compare = CompareEnum.GE, clazz = LocalDateTime.class)
         private Long createTimeFrom;
 
-        @Timestamp(alias = "gmt_create", compare = CompareEnum.LE, clazz = LocalDateTime.class)
+        @Timestamp(alias = "create_time", compare = CompareEnum.LE, clazz = LocalDateTime.class)
         private Long createTimeTo;
     }
 

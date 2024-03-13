@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.photowey.mybatisplus.ext.mapper.domain.entity;
+package com.photowey.mybatisplus.ext.condition.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.photowey.mybatisplus.ext.core.domain.entity.BaseEntity;
+import com.photowey.mybatisplus.ext.core.domain.entity.CreatorEntity;
 import lombok.*;
 import org.apache.ibatis.type.Alias;
 
@@ -34,7 +34,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("Employee")
 @TableName(value = "sys_employee")
 @EqualsAndHashCode(callSuper = true)
-public class Employee extends BaseEntity<Employee> {
+public class Employee extends CreatorEntity<Employee> {
 
     /**
      * 主键标识

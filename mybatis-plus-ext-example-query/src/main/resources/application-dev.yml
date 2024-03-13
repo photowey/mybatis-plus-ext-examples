@@ -13,7 +13,6 @@ spring:
     url: "jdbc:h2:mem:test_db"
     username: root
     password:
-    schema: "classpath:db/schema.sql"
     #data: "classpath:db/data.sql"
   h2:
     console:
@@ -22,7 +21,10 @@ spring:
       settings:
         trace: false
         web-allow-others: false
+  sql:
+    init:
+      schema-locations: "classpath:db/schema.sql"
 
 logging:
   level:
-    "com.photowey.mybatisplus.ext.query.repository": debug
+    "com.photowey.mybatisplus.ext.condition.repository": debug

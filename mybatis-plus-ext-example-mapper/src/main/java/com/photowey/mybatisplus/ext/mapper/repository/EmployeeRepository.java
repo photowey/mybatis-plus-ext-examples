@@ -1,7 +1,7 @@
 package com.photowey.mybatisplus.ext.mapper.repository;
 
+import com.photowey.mybatisplus.ext.condition.domain.entity.Employee;
 import com.photowey.mybatisplus.ext.repository.RepositoryExt;
-import com.photowey.mybatisplus.ext.mapper.domain.entity.Employee;
 
 /**
  * {@code EmployeeRepository}
