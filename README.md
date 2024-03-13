@@ -9,9 +9,21 @@
 - `mybatis-plus-ext-example-query`  // 扩展 `QueryWrapper` 和 `LambdaQueryWrapper`  
 - `mybatis-plus-ext-example-web`  // `web` 项目依赖  
 
+
+
 ## 测试
 
 ```shell
+# 1.Clone
+$ git clone https://github.com/photowey/mybatis-plus-ext.git
 
+# 2.Install
+$ mvn clean -DskipTests source:jar deploy
+# Or
+$ cd ./mybatis-plus-ext
+$ ./release.cmd
+
+# 3.测试
+# 见对应项目的 ut
 ```
 
